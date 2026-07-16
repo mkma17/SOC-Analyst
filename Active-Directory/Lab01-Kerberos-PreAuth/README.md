@@ -42,10 +42,8 @@ hashcat -m 19900 hash.txt /usr/share/wordlists/rockyou.txt
 **Result:**
 The attack recovered the plaintext password `kittycat12` in **17 seconds**, exhausting only **0.55%** of the wordlist.
 
-```text
-[Insert Hashcat Terminal Output Screenshot Here]
-Example: Showing 'Status...........: Cracked' and the recovered password string.
-```
+
+![](screenshots/hashCatInfo.png)
 
 ---
 
