@@ -110,7 +110,7 @@ kittycat12
 
 This result demonstrates that weak passwords remain vulnerable to offline password recovery attacks even when Kerberos uses strong encryption.
 
-![](screenshots/hash_carck.png)
+![](screenshots/hash_crack.png)
 
 ---
 
