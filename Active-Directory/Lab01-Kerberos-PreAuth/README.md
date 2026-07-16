@@ -22,10 +22,7 @@ During a routine network traffic review / alert triaging, a suspicious Kerberos 
 2. **Identifying the Target:** Located the suspicious request sent by user `william.dupond` under the realm `CATCORP.LOCAL`.
 3. **Extracting the Ciphertext:** Inspected the Pre-Authentication data (`PA-ENC-TIMESTAMP`) and extracted the 112-character encrypted `cipher` string.
 
-```text
-[Insert Wireshark Packet Details Screenshot Here]
-Example: Showing 'cname', 'realm', and the 'cipher' field under PA-ENC-TIMESTAMP.
-```
+![Wireshark Packet Details Showing PA-ENC-TIMESTAMP](screenshots/details.png)
 
 ### Phase 2: Hash Extraction & Formatting
 The extracted metadata and cipher were formatted into a standard Hashcat-compatible format for Kerberos 5 AS-REQ Pre-Auth hashes:
