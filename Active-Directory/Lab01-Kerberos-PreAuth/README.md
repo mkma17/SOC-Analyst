@@ -1,86 +1,88 @@
-# SOC Case Study: Kerberos Pre-Authentication Analysis (PCAP Investigation)
+# SOC Case Study: Investigating a Suspicious Kerberos Connection
 
-> This repository documents the analysis of a Kerberos authentication exchange extracted from a PCAP file as part of a cybersecurity training lab. The objective was to investigate the Kerberos authentication process, identify exposed pre-authentication data, and assess the associated security risks.
+**Kerberos AS-REQ Analysis & Password Recovery Validation**
+
+> **Scenario**
+>
+> As part of a SOC training exercise, Cat Corporation's Security Operations Center (SOC) requested an investigation into a suspicious Kerberos authentication connection associated with the user **william.dupond**. The objective was to analyze the provided PCAP file, investigate the Kerberos authentication exchange, and assess whether the associated credentials were vulnerable to offline password recovery.
 
 ---
 
 # Skills Demonstrated
 
 * Network Traffic Analysis
-* Wireshark Packet Inspection
+* Wireshark Packet Analysis
 * Kerberos Authentication Analysis
 * PCAP Investigation
 * Hash Extraction
 * Password Security Assessment
-* Security Reporting
+* Technical Documentation
 
 ---
 
 # 1. Executive Summary
 
-During the analysis of the provided PCAP file, a Kerberos Authentication Service Request (AS-REQ) was identified for the Active Directory user **william.dupond**.
+Following a request from Cat Corporation's SOC team, a suspicious Kerberos authentication connection was investigated using the provided PCAP file.
 
-The captured authentication exchange contained Kerberos pre-authentication data (`PA-ENC-TIMESTAMP`). To evaluate the security impact of this data, the extracted authentication hash was validated using Hashcat.
+The analysis identified a Kerberos Authentication Service Request (AS-REQ) containing pre-authentication data for the Active Directory user **william.dupond**.
 
-The validation successfully recovered the account password in approximately **17 seconds**, demonstrating how weak passwords can expose Kerberos-authenticated accounts to offline password recovery attacks.
+To evaluate the security impact of the captured authentication exchange, the extracted Kerberos pre-authentication data was validated using Hashcat. The validation successfully recovered the user's password within **17 seconds**, confirming that the account was protected by a weak password susceptible to offline dictionary attacks.
 
-This case study highlights the importance of strong password policies even when secure authentication protocols such as Kerberos are used.
+Although the Kerberos protocol employed strong AES-256 encryption, the investigation demonstrated that weak password selection significantly reduced the overall security of the authentication process.
 
 ---
 
-# 2. Lab Information
+# 2. Investigation Details
 
 | Item                   | Value                                                               |
 | ---------------------- | ------------------------------------------------------------------- |
-| Lab Type               | PCAP Analysis                                                       |
-| Protocol               | Kerberos v5                                                         |
-| Authentication Message | AS-REQ                                                              |
+| Scenario               | SOC Training Investigation                                          |
 | Target User            | william.dupond                                                      |
 | Domain                 | CATCORP.LOCAL                                                       |
 | User Principal Name    | [william.dupond@catcorp.local](mailto:william.dupond@catcorp.local) |
+| Protocol               | Kerberos v5                                                         |
+| Authentication Message | AS-REQ                                                              |
 | Encryption Type        | AES256-CTS-HMAC-SHA1-96 (etype 18)                                  |
-| Analysis Tools         | Wireshark, Hashcat                                                  |
+| Investigation Tools    | Wireshark, Hashcat                                                  |
 
 ---
 
-# 3. Objectives
+# 3. Investigation Walkthrough
 
-The objectives of this case study were to:
+## Phase 1 – Traffic Analysis
 
-* Analyze Kerberos authentication traffic.
-* Identify Kerberos AS-REQ messages.
-* Extract Kerberos pre-authentication data.
-* Assess the security risk associated with the captured authentication exchange.
-* Document the findings using a SOC-style investigation report.
+The provided PCAP file was opened in **Wireshark** to identify Kerberos authentication traffic.
 
----
-
-# 4. Investigation Walkthrough
-
-## Phase 1 – Traffic Analysis (Wireshark)
-
-The PCAP file was inspected using Wireshark.
-
-To isolate Kerberos Authentication Service Requests, the following display filter was applied:
+The following display filter was applied:
 
 ```text
 kerberos.msg_type == 10
 ```
 
-The analysis identified an AS-REQ generated by the user:
+This filter isolated Kerberos Authentication Service Requests (AS-REQ).
+
+The analysis identified an authentication request generated by:
 
 * Username: `william.dupond`
 * Realm: `CATCORP.LOCAL`
 
-The Kerberos Pre-Authentication (`PA-ENC-TIMESTAMP`) field contained encrypted authentication data that was extracted for further analysis.
+Inspection of the packet revealed the **PA-ENC-TIMESTAMP** field containing the encrypted Kerberos pre-authentication data.
 
 ![](screenshots/details.png)
+
+> Wireshark showing:
+>
+> * Kerberos AS-REQ
+> * Username
+> * Realm
+> * PA-ENC-TIMESTAMP
+> * Cipher field
 
 ---
 
 ## Phase 2 – Hash Extraction
 
-The extracted authentication data was formatted into the standard Hashcat format for Kerberos 5 AS-REQ (etype 18).
+The encrypted authentication data was extracted from the Kerberos packet and converted into the Hashcat format required for Kerberos 5 AS-REQ (etype 18).
 
 ```text
 $krb5pa$18$william.dupond$CATCORP.LOCAL$fc8bbe22b2c967b222ed73dd7616ea71b2ae0c1b0c3688bfff7fecffdebd4054471350cb6e36d3b55ba3420be6c0210b2d978d3f51d1eb4f
@@ -88,9 +90,9 @@ $krb5pa$18$william.dupond$CATCORP.LOCAL$fc8bbe22b2c967b222ed73dd7616ea71b2ae0c1b
 
 ---
 
-## Phase 3 – Password Strength Validation
+## Phase 3 – Password Recovery Validation
 
-To assess the security impact of the captured authentication data, Hashcat was used to determine whether the password could be recovered through an offline dictionary attack.
+To determine whether the captured authentication data presented a security risk, an offline password recovery validation was performed using **Hashcat**.
 
 **Command Used**
 
@@ -100,7 +102,7 @@ hashcat -m 19900 hash.txt /usr/share/wordlists/rockyou.txt
 
 ### Result
 
-The password was successfully recovered after approximately **17 seconds**, consuming only **0.55%** of the wordlist.
+The password was successfully recovered in approximately **17 seconds**, after processing only **0.55%** of the wordlist.
 
 Recovered password:
 
@@ -108,76 +110,70 @@ Recovered password:
 kittycat12
 ```
 
-This result demonstrates that weak passwords remain vulnerable to offline password recovery attacks even when Kerberos uses strong encryption.
+This confirms that the account password lacked sufficient complexity and could be recovered through an offline dictionary attack if an attacker obtained the same Kerberos pre-authentication data.
 
 ![](screenshots/hash_crack.png)
 
+> Hashcat output showing:
+>
+> * Status: Cracked
+> * Recovered Password
+
 ---
 
-# 5. Findings
+# 4. Findings
 
-The analysis identified the following:
+The investigation identified the following findings:
 
-* A valid Kerberos AS-REQ authentication exchange was present.
+* A valid Kerberos AS-REQ authentication request was present in the network capture.
 * Kerberos pre-authentication data was successfully extracted.
-* The extracted data was compatible with offline password recovery tools.
-* The account password was successfully recovered due to insufficient password complexity.
+* The authentication data was suitable for offline password validation.
+* The user's password was successfully recovered due to weak password complexity.
+* The Kerberos encryption itself remained uncompromised; the weakness originated from password selection.
 
 ---
 
-# 6. Security Impact
+# 5. Security Impact
 
-If an attacker captured the same Kerberos authentication exchange in a real environment, they could potentially:
+If an attacker captured the same Kerberos authentication exchange in a production environment, they could potentially:
 
-* Perform offline password guessing.
-* Recover weak user passwords.
-* Authenticate using valid credentials.
-* Access resources according to the compromised user's permissions.
-
-Although Kerberos encryption remained secure, weak passwords significantly reduced the overall security of the authentication process.
+* Recover weak passwords through offline dictionary attacks.
+* Authenticate using legitimate user credentials.
+* Gain access to resources available to the compromised account.
+* Use the recovered credentials as part of a broader attack chain.
 
 ---
 
-# 7. Recommendations
+# 6. Recommendations
 
-To reduce the risk of similar attacks in production environments:
+To reduce the likelihood of similar credential exposure:
 
 * Enforce strong password policies.
-* Require passwords of at least 14 characters.
-* Prevent dictionary-based passwords.
+* Require passwords with a minimum length of 14 characters.
+* Block commonly used and dictionary-based passwords.
 * Enable Multi-Factor Authentication (MFA).
-* Monitor Windows Event IDs **4768** and **4771**.
-* Periodically audit password strength.
-* Train users on secure password creation.
+* Monitor Kerberos authentication events.
+* Perform periodic password security assessments.
+* Provide user awareness training on password security.
 
 ---
 
-# 8. Lessons Learned
+# 7. Lessons Learned
 
-This case study demonstrates that secure authentication protocols alone cannot fully protect user accounts when weak passwords are used.
+This investigation demonstrates that strong authentication protocols such as Kerberos cannot compensate for weak user passwords.
 
-Through this lab, I practiced:
+Through this case study, the following practical skills were demonstrated:
 
 * Analyzing Kerberos authentication traffic.
-* Investigating PCAP files using Wireshark.
-* Understanding Kerberos pre-authentication.
-* Extracting authentication data.
+* Investigating network captures using Wireshark.
+* Extracting Kerberos authentication data.
 * Assessing password strength using Hashcat.
-* Documenting technical findings in a SOC reporting format.
-
----
-
-# 9. References
-
-* Wireshark
-* Hashcat
-* Kerberos Authentication Protocol
-* MITRE ATT&CK (Credential Access)
+* Documenting findings using a structured SOC reporting methodology.
 
 ---
 
 # Conclusion
 
-This lab provided practical experience in analyzing Kerberos authentication traffic and assessing the security implications of exposed pre-authentication data.
+This SOC case study demonstrated the process of investigating a suspicious Kerberos authentication connection using a PCAP file provided as part of a training scenario.
 
-Although performed in a controlled training environment, the techniques demonstrated in this case study reflect real-world analysis tasks commonly performed by SOC analysts when investigating authentication-related security events.
+The investigation successfully identified the Kerberos authentication exchange, extracted the pre-authentication data, and validated the security impact of weak password selection. While the scenario was conducted in a controlled lab environment, the investigation workflow reflects techniques commonly used by SOC analysts when examining authentication-related security events.
