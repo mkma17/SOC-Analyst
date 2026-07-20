@@ -27,7 +27,7 @@ To simplify the analysis, I filtered the capture to display only NTLM traffic.
 ntlmssp
 ```
 
-![](ntlmssp.png)
+![](screenshots/ntlmssp.png)
 
 ---
 
@@ -43,7 +43,7 @@ NTLM authentication consists of three messages:
 
 The **Authenticate (Type 3)** message is the most important because it contains the information required to construct the NTLMv2 challenge-response.
 
-![](ntlmssp.png)
+![](screenshots/ntlmssp.png)
 
 ---
 
