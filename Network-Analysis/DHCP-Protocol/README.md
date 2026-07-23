@@ -56,7 +56,7 @@ During the analysis, the following information was identified:
 | Field | Value |
 |------|-------|
 | Client IP Address | `192.168.2.244` |
-| DHCP Server IP Address | `192.168.2.1` |
+| Server IP Address | `192.168.2.1` |
 | DNS Server | `192.168.2.1 and 192.168.2.5` |
 | Default Gateway | `192.186.2.1` |
 | Subnet Mask | `255.255.255.0` |
