@@ -53,18 +53,21 @@ The DHCP ACK packet contains the configuration assigned to the client.
 
 During the analysis, the following information was identified:
 
-* Client IP Address
-* DHCP Server IP Address
-* DNS Server
-* Default Gateway (Router)
-* Subnet Mask
-* DHCP Server Identifier
-* Lease Time
-* Domain Name
-* Client MAC Address
-* Server MAC Address
+| Field | Value |
+|------|-------|
+| Client IP Address | `192.168.2.244` |
+| DHCP Server IP Address | `192.168.2.244` |
+| DNS Server | `192.168.2.1 and 192.168.2.5` |
+| Default Gateway | `192.186.2.1` |
+| Subnet Mask | `255.255.255.0` |
+| DHCP Server Identifier | `192.186.2.1` |
+| Lease Time | `2 Hours` |
+| Domain Name | `fruitinc.xyz` |
+| Client MAC Address | `00:0c:29:82:f5:94` |
+| Server MAC Address | `00:0c:29:88:1d:63` |
+| Transaction ID | '0x2a7d544b' |
 
-![](screenshots/ack-packte.png)
+![](screenshots/ack-packet.png)
 
 ![](screenshots/dhcp-options.png)
 
