@@ -363,5 +363,6 @@ flag.fruitinc.xyz → TXT → ACOOLDNSFLAG
 - How authoritative DNS servers provide the requested DNS records.
 - How to identify **NS, A, AAAA, and TXT** records.
 - How to verify an IP address and correlate the result with the traffic observed in a PCAP.
-- How TXT records can contain arbitrary text information.
+- How DNS TXT records can contain useful information during network investigations.
+- Why unusual TXT queries should be investigated in context, especially when associated with suspicious domains or abnormal DNS behavior.
 - How to follow a complete DNS resolution process directly from a PCAP.
