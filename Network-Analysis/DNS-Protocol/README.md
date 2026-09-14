@@ -281,7 +281,7 @@ The observed DNS record was:
 |---|---|---|
 | `flag.fruitinc.xyz` | TXT | `ACOOLDNSFLAG` |
 
-![DNS TXT record](screenshots/dns-txt-record.png)
+![](screenshots/dns-txt-record.png)
 
 The relevant response section showed:
 
